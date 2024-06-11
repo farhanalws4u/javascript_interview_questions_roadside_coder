@@ -205,3 +205,55 @@ function add(a) {
 }
 
 console.log("infinite currying", add(5)(3)(4)(4)(1)(2)()); // here while calling this last empty argument is necessary to break the loop of the recursion.
+
+// -> Real world example of currying.. Manipulating DOM.
+
+function updateElementText(tagName) {
+  return function (content) {
+    document.getElementsByTagName(tagName).textContent = content;
+  };
+}
+
+const updateText = updateElementText("h1");
+updateText("by farhan khan");
+
+// ===> QUESTIONS BASED ON OBJECTS
+
+// -> delete keyword to delete the properties of object
+
+let person = { name: "farhan", age: "22", mail: "farhan@gmail.com" };
+delete person.mail;
+console.log(person);
+
+// if we do something like
+function fun(a) {
+  delete a; // it will not going to effect this local variable because it is only used for object properties.
+  return a;
+}
+
+// -> defining and accessing the properties named with spaces
+
+let obj = {
+  "key with space": 20, // defining the key with space
+};
+console.log(obj["key with space"]); // accessing the key with space.
+
+// -> Iterate through keys of an object using for-in loop.
+
+for (key in person) console.log(key);
+
+// -> if we have two keys with same name in object, then the last added key will be considered or it will replace the previous one.
+
+let newObj = { a: 1, b: 2, a: 3 };
+console.log(newObj);
+
+// -> what would be the output.
+
+const a = {};
+const b = { key: "b" };
+const cc = { key: "c" };
+
+a[b] = 123;
+a[cc] = 456;
+
+console.log(a);
