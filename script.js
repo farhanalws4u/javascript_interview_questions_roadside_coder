@@ -257,3 +257,72 @@ a[b] = 123;
 a[cc] = 456;
 
 console.log(a);
+
+// -> spread operator on string
+
+console.log([..."farhan"]); // it spreads all the characters in array of characters.
+
+// -> JSON.stringify with only certain keys of object.
+
+const cat = { name: "oggy", color: "brown", age: 10 };
+console.log(JSON.stringify(cat, ["name", "color"]));
+
+// -> Object destructuring with rename variable
+
+let { name: catName } = cat;
+console.log(catName);
+
+// -> Nested Destructuring with objects.
+
+let car = { name: "porsche", specs: { color: "black", engine: "v8" } };
+
+let {
+  specs: { color },
+} = car;
+console.log(color);
+
+// -> question on referencing
+
+let personNew = { name: "farhan", age: 22 };
+let member = [personNew];
+personNew = null;
+console.log(member);
+
+// -> Re assigning an object does not effect the reference of that object.
+
+function changeReference(person) {
+  person.age = 25;
+  person = {
+    name: "farhan ",
+    age: 10,
+  };
+  return person;
+}
+
+let personObjOne = { name: "alex", age: 29 };
+
+const personObjTwo = changeReference(personObjOne);
+
+console.log(personObjOne);
+console.log(personObjTwo);
+
+// -> Shallow copy and Deep copy;
+
+// Shallow copy: when the copied object still have the reference of original object, it is called a shallow copy.
+// Deep copy: When the copied object does not have the reference of the original object then it is called the deep copy.
+
+// Ways to create Deep copy:
+
+// 1. using Object.assign()
+
+let movie = { name: "harry potter", partsLength: 8 };
+
+let newMovie = Object.assign({}, movie);
+
+// 2. JSON stringify and parse
+
+let newPSMovie = JSON.parse(JSON.stringify(movie));
+
+// 3. using the object destructuring
+
+let newDMovie = { ...movie };
