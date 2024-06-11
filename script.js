@@ -118,9 +118,9 @@ function add() {
 }
 
 let c = add();
-c.increment(5);
-c.increment(5);
-console.log(c.get());
+// c.increment(5);
+// c.increment(5);
+// console.log(c.get());
 
 // -> What is the module pattern.
 
@@ -138,7 +138,7 @@ var Module = (function () {
 })();
 
 Module.publicMethod(); // gives the output
-Module.privateMethod(); // gives the error
+// Module.privateMethod(); // gives the error
 
 // -> Make it run a function only once. using polyfill.
 
@@ -161,4 +161,47 @@ hello(1, 2);
 hello(1, 2);
 hello(1, 2);
 
-// -> caching or memoizing in javascript using polyfills
+//===> QUESTIONS ON CURRYING
+
+// -> Q. implement sum function like sum(2)(6)(1)
+
+function sum(a) {
+  return function (b) {
+    return function (c) {
+      return a + b + c;
+    };
+  };
+}
+
+console.log("currying", sum(2)(3)(4));
+
+// -> Q. Implement the following:
+// evaluate("sum")(3)(2)
+// evaluate("multiply")(3)(2)
+// evaluate("divide")(3)(2)
+
+function evaluate(operation) {
+  return function (a) {
+    return function (b) {
+      if (operation === "sum") return a + b;
+      if (operation === "multiply") return a * b;
+      else return a / b;
+    };
+  };
+}
+
+console.log("conditional currying", evaluate("sum")(2)(5));
+console.log("conditional currying", evaluate("multiply")(2)(5));
+
+// Q. Infinite currying:
+
+// we have to implement something like sum(a)(b)(c).... (n);
+
+function add(a) {
+  return function (b) {
+    if (b) return add(a + b); // some sort of recursion we are using here and check the b value not to be empty.
+    return a;
+  };
+}
+
+console.log("infinite currying", add(5)(3)(4)(4)(1)(2)()); // here while calling this last empty argument is necessary to break the loop of the recursion.
