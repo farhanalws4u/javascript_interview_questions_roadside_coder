@@ -326,3 +326,248 @@ let newPSMovie = JSON.parse(JSON.stringify(movie));
 // 3. using the object destructuring
 
 let newDMovie = { ...movie };
+
+// ===> QUESTIONS ON 'THIS' KEYWORD
+
+// -> arrow function and normal function with this keyword
+
+let user = {
+  name: "farhan",
+  age: 22,
+
+  // for normal function
+  childObj: {
+    newName: "farhan khan",
+    getDetails() {
+      console.log(this.newName, "and", this.name);
+    },
+  },
+
+  // for arrow function
+  arrowFun: () => {
+    console.log(this.newName, "and", this.name);
+  },
+};
+
+user.childObj.getDetails();
+user.arrowFun();
+
+// explanation: normal function looks for the variable accessed by this keyword in the parent that is user object here.thats why it is printing newName variable value but it does not lookup to nested parents. only one level of parent it can lookup.
+// Arrow functions on the other hand does not have their own this keyword and they always lookup to the parent scope or parent function and for arrow function the parent scope is global window object because user object literals does not create a scope here.
+
+// we can do something like this to provide arrow function a parent function's this keyword.
+
+let userArrow = {
+  name: "farhan",
+  age: 22,
+  // for arrow function
+  parent() {
+    const arrowFun = () => {
+      console.log(this.name);
+    };
+    arrowFun();
+  },
+};
+userArrow.parent();
+// now this arrow function have the this keyword from its parent that is 'parent' in this case. and this 'parent' function getting its this value from the userArrow object.
+
+// -> this keyword inside a class.
+
+class userClass {
+  constructor(n) {
+    this.name = n;
+  }
+  getName() {
+    console.log(this.name);
+  }
+}
+const userObj = new userClass("farhan Khan");
+console.log(userObj.getName());
+
+// -> Q. what is the output
+
+const u = {
+  name: "farhan!",
+  getName() {
+    const name = "farhan khan";
+    return this.name;
+  },
+};
+console.log(u.getName());
+
+// -> Q. Result of accessing the ref of an function/object.
+
+function refFun() {
+  return {
+    temp: "temp",
+    ref: this,
+  };
+}
+// fix -> function refFun() {
+//   return {
+//     temp: "temp",
+//    ref(){
+//     return this;
+//   }
+//   }
+// }
+let data = refFun();
+console.log(data.ref.name);
+
+// explanation: here ref would be point to window object because for function when we are calling it, it is pointing to window object and this inside the function would also point to window object.
+
+// -> Q. what would be the output.
+
+const _user = {
+  name: "farhan khan",
+  logMessage() {
+    console.log(this.name);
+  },
+};
+
+setTimeout(() => {
+  _user.logMessage;
+}, 1000);
+
+// here because we are directly passing the logMessage as a callback, it is creating a new context scope and it does not know anything about name variable. to fix this we can pass another callback into settimeout and in that callback we can call logMessage .
+// fix ->
+setTimeout(function () {
+  _user.logMessage();
+}, 1000);
+
+// -> what is the output.
+
+var length = 4;
+
+function callback() {
+  console.log(this.length);
+}
+
+const object = {
+  length: 5,
+  method(fn) {
+    fn();
+  },
+};
+
+object.method(callback);
+
+// ===> Call, Bind and Apply
+
+// -> Explicit Object Binding: Explicit binding refers to the process of explicitly setting the value of this for a function. This can be done by using the call , bind , or apply methods provided by JavaScript.
+
+// -> Call: The call() method calls the function directly and sets this to the first argument passed to the call method and if any other sequences of arguments preceding the first argument are passed to the call method then they are passed as an argument to the function.
+
+var bindObj = { name: "Farhan khan" };
+
+function sayHello(age) {
+  return "hello " + this.name + " age " + age;
+}
+
+console.log("Call:", sayHello.call(bindObj, 22));
+
+// -> Apply: it works same as call() but it takes the arguments as an array.
+
+console.log("Apply:", sayHello.apply(bindObj, [22]));
+
+// -> Bind: The bind() method creates a new function and when that new function is called it set this keyword to the first argument which is passed to the bind method, and if any other sequences of arguments preceding the first argument are passed to the bind method then they are passed as an argument to the new function when the new function is called.
+// A very useful example of bind keyword we can see in the class based React component when we bind this keyword of class to any function such as Event handler function to access the state variable of that class.
+
+const bindFun = sayHello.bind(bindObj);
+
+console.log("Bind:", bindFun(23));
+
+// -> what is the output ?
+
+const personObj = { name: "John" };
+
+function sayHi(age) {
+  return `${this.name} is ${age}`;
+}
+
+console.log(sayHi.call(personObj, 24));
+console.log(sayHi.bind(personObj, 24));
+
+// -> what is the output?
+
+const age = 10;
+
+var newPerson = {
+  name: "farhan",
+  age: 22,
+  getAge: function () {
+    return this.age;
+  },
+};
+
+var person2 = { age: 28 };
+console.log(newPerson.getAge.call(person2));
+console.log(newPerson.getAge.apply(person2)); // works same as call.
+const n = newPerson.getAge.bind(person2);
+n();
+
+// -> What is the output ?
+
+var status = "happy";
+
+setTimeout(() => {
+  const status = "sad";
+
+  const data = {
+    status: "cool",
+    getStatus() {
+      return this.status;
+    },
+  };
+  console.log(data.getStatus()); // logs -> cool
+  console.log(data.getStatus.call(this)); // logs -> happy // because every function which is not inside any object, refers to the global this.
+}, 0);
+
+// -> Call printAnimals such that it prints all the animals in object ?
+
+// const animals = [
+//   { species: "lion", name: "king" },
+//   { species: "whale", name: "queen" },
+// ];
+
+// function printAnimals(i) {
+//   this.print = function () {
+//     console.log("#" + i + " " + this.species + ":" + this.name);
+//   };
+//   this.print();
+// }   --> part of the questions
+
+const animals = [
+  { species: "lion", name: "king" },
+  { species: "whale", name: "queen" },
+];
+
+function printAnimals(i) {
+  this.print = function () {
+    console.log("#" + i + " " + this.species + ":" + this.name);
+  };
+  this.print();
+}
+
+animals.forEach((animal, i) => {
+  printAnimals.call(animal, i);
+});
+
+// -> Append an array to another array. (restrict to use concat)
+
+const array = ["a", "b"];
+const elements = [0, 1, 2];
+
+array.push.apply(array, elements);
+
+// -> what is the output ?
+
+function f() {
+  console.log(this);
+}
+
+let userN = {
+  g: f.bind(null), // because we are making the local this of f() to null, it will point to global this.
+};
+
+userN.g(); // outputs the window object.
