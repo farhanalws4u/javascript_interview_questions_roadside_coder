@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      div {
+        width: 100%;
+        height: 200px;
+        border: 2px solid red;
+      }
+      form {
+        width: 100%;
+        height: 100px;
+        border: 2px solid black;
+      }
+      button {
+        margin-top: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Event Propagation</h1>
+    <div>
+      Div
+      <form action="">
+        <button>Button</button>
+      </form>
+    </div>
+    <script>
+      let div = document.querySelector("div");
+      let form = document.querySelector("form");
+      let button = document.querySelector("button");
+
+      div.addEventListener("click", (event) => {
+        alert("div");
+      });
+      form.addEventListener("click", () => {
+        alert("form");
+        // event.target and event.currentTarget
+      });
+      button.addEventListener("click", () => {
+        alert("button");
+      });
+    </script>
+  </body>
+</html>
+
+<!-- 
+-> Event Propagation: Deciding in which direction and when the event will be propagate is called as event propagation.  
+
+-> Event Bubbling: in bubbling events are executed from bottom to up direction. And it is the default behavior when we have nested div or component with eventListeners.
+
+there are few events that do not bubble such as focus etc.
+
+-->

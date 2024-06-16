@@ -1,5 +1,5 @@
 // ===> QUESTIONS RELATED TO MAP, FILTER AND REDUCE
-console.log("Javascript interview questions");
+console.log("===== MAP, FILTER AND REDUCE =====");
 
 // polyfills:  A polyfill in JavaScript is a script that adds modern features to older browsers that do not natively support them. for example if we dont have the map function in the browser api. then we can add our own map function to the Array prototype.
 
@@ -48,6 +48,7 @@ let reducedValue = newArr.myReduce((acc, curr, i, arr) => (curr = curr + acc));
 console.log({ reducedValue });
 
 // ===> QUESTIONS RELATED TO FUNCTIONS:
+console.log("===== FUNCTIONS =====");
 
 //-> what is the output?
 
@@ -163,6 +164,8 @@ hello(1, 2);
 
 //===> QUESTIONS ON CURRYING
 
+console.log("===== CURRYING =====");
+
 // -> Q. implement sum function like sum(2)(6)(1)
 
 function sum(a) {
@@ -218,6 +221,8 @@ const updateText = updateElementText("h1");
 updateText("by farhan khan");
 
 // ===> QUESTIONS BASED ON OBJECTS
+
+console.log("===== OBJECTS =====");
 
 // -> delete keyword to delete the properties of object
 
@@ -328,6 +333,8 @@ let newPSMovie = JSON.parse(JSON.stringify(movie));
 let newDMovie = { ...movie };
 
 // ===> QUESTIONS ON 'THIS' KEYWORD
+
+console.log("===== THIS KEYWORD =====");
 
 // -> arrow function and normal function with this keyword
 
@@ -454,6 +461,8 @@ object.method(callback);
 
 // ===> Call, Bind and Apply
 
+console.log("===== CALL, BIND AND APPLY =====");
+
 // -> Explicit Object Binding: Explicit binding refers to the process of explicitly setting the value of this for a function. This can be done by using the call , bind , or apply methods provided by JavaScript.
 
 // -> Call: The call() method calls the function directly and sets this to the first argument passed to the call method and if any other sequences of arguments preceding the first argument are passed to the call method then they are passed as an argument to the function.
@@ -571,3 +580,371 @@ let userN = {
 };
 
 userN.g(); // outputs the window object.
+
+// -> Bind chaining.
+
+// Binding chaining in javascript does not exist. event if we do something like this f.bind(this).bind({}) it will only consider first binding.
+
+// Q. Fix the code to work properly.
+
+function checkPassword(success, failed) {
+  let password = prompt("Password ?");
+  if (password === "farhan") success();
+  else failed();
+}
+
+let user2 = {
+  name: "farhan Khan",
+
+  loginSuccessful() {
+    console.log(`${this.name} logged in`);
+  },
+
+  loginFailed() {
+    console.log(`${this.name} failed to log in`);
+  },
+};
+
+// checkPassword(user2.loginSuccessful, user2.loginFailed); error here
+// fix->
+// checkPassword(user2.loginSuccessful.bind(user2), user2.loginFailed.bind(user2));
+
+// Note:- here we can clearly see that the value of this keyword for a function is defined as where the is being called. in this example success and failed methods are called inside checkPassword method and checkPassword method does not have name in its this scope. so we have to bind user2 object to function calls to provide this keyword content to the success and failed methods.
+
+// -> Polyfill for Call Method.
+
+// const age = 10;
+
+// var newPerson = {
+//   name: "farhan",
+//   age: 22,
+//   getAge: function () {
+//     return this.age;
+//   },
+// };
+
+// var person2 = { age: 28 };
+// console.log(newPerson.getAge.call(person2));  <-- REFERENCE
+
+Function.prototype.myCall = function (context = {}, ...args) {
+  if (typeof this !== "function") throw new Error("It is not callable");
+
+  context.fn = this;
+  context.fn(...args);
+};
+
+// -> polyfill for apply
+
+Function.prototype.myApply = function (context = {}, args = []) {
+  if (typeof this !== "function") throw new Error("It is not callable");
+
+  if (Array.isArray(args))
+    throw new Error("Passed arguments are not in the form of an array.");
+
+  context.fn = this;
+  context.fn(...args);
+};
+
+// -> Polyfill for Bind
+
+Function.prototype.myBind = function (context = {}, ...args) {
+  if (typeof this !== "function") throw new Error("It is not callable");
+
+  context.fn = this;
+  return function () {
+    return context.fn(...args);
+  };
+};
+
+// ===> QUESTIONS ON PROMISES
+
+console.log("===== PROMISES =====");
+
+// -> an example of how callback can be implemented along with callback hell implementation.
+
+function important(username, cb) {
+  setTimeout(() => {
+    cb(`welcome ${username}`);
+  }, 1000);
+}
+
+function sit(message, cb) {
+  setTimeout(() => {
+    cb(message);
+  }, 1000);
+}
+
+function askForEat(message, cb) {
+  setTimeout(() => {
+    cb(message);
+  }, 1000);
+}
+
+important("farhan khan", function (message) {
+  console.log(message);
+  sit("come here and sit", function (message) {
+    console.log(message);
+    askForEat("what would you like to eat", function (message) {
+      console.log(message);
+      important("farhan khan", function (message) {
+        console.log(message);
+        sit("come here and sit", function (message) {
+          console.log(message);
+          askForEat("what would you like to eat", function (message) {
+            console.log(message);
+          });
+        });
+      });
+    });
+  });
+}); // continuing in the same manner will result into a callback hell.
+
+// -> Promises: Promise is the solution for callback hell.A Promise is an object representing the eventual completion or failure of an asynchronous operation.
+
+// "Producing code" is code that can take some time
+
+// "Consuming code" is code that must wait for the result
+
+// A Promise is an Object that links Producing code and Consuming code
+
+const myPromise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    const result = true;
+    if (result) resolve("Promise is fulfilled...");
+    else reject(new Error("promise is not fulfilled..."));
+  }, 2000);
+});
+
+myPromise
+  .then((result) => {
+    console.log("promise result:", result);
+  })
+  .catch((error) => console.log("error while fulfilling promise:", error));
+
+// -> Now converting callback hell into chain of promises which is better than callback hell.
+
+function important(username) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(`welcome ${username}`);
+    }, 1000);
+  });
+}
+
+function sit(message) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(message);
+    }, 1000);
+  });
+}
+
+function askForEat(message) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(message);
+    }, 1000);
+  });
+}
+
+important("Welcome guest!").then((res) => {
+  console.log(res);
+  sit("Come and sit here").then((res) => {
+    console.log(res);
+    askForEat("What would you like to have").then((res) => {
+      console.log(res);
+    });
+  });
+});
+
+// But again we are getting that pyramid like structure as in callback hell. what we can do to avoid this, we can use promises chaining.
+
+important("Welcome guest!")
+  .then((res) => {
+    console.log(res);
+    return sit("come here and sit");
+  })
+  .then((res) => {
+    console.log(res);
+    return askForEat("what would you like to eat!");
+  })
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((error) => console.log(error)); // <-- this is called promise chaining
+
+// But it is still so lengthy so we have something called promise combinator that helps us to execute more than one promise at one time.
+
+// -> 1. Promise.all(): executes all the passed promises in parallel and returns an array of all the promises fulfilled but if one of the promise is failed, it fails the complete promise.all function.
+
+Promise.all([
+  important("Welcome guest!"),
+  sit("come here and sit"),
+  askForEat("what would you like to eat!"),
+])
+  .then((res) => {
+    console.log("Promise.all result:", res);
+  })
+  .catch((err) => console.log("promise.all error:", err));
+
+// -> 2. Promise.race(): returns the first promise that gets fulfilled or rejected.
+
+Promise.race([
+  important("Welcome guest!"),
+  sit("come here and sit"),
+  askForEat("what would you like to eat!"),
+])
+  .then((res) => {
+    console.log("Promise.race result:", res);
+  })
+  .catch((err) => console.log("promise.race error:", err));
+
+// -> 3. Promise.allSettled(): it is similar to promise.all but even if one of the promises fails it returns the other fulfilled promises and the rejected promises also.
+
+Promise.allSettled([
+  important("Welcome guest!"),
+  sit("come here and sit"),
+  askForEat("what would you like to eat!"),
+])
+  .then((res) => {
+    console.log("Promise.allSettled result:", res);
+  })
+  .catch((err) => console.log("Promise.allSettled error:", err));
+
+// 4. Promise.any(): It is same as Promise.race but it only returns only the first fulfilled promise and ignores the other fulfilled and rejected promises. if all the promises are rejected then only it returns the error.
+
+Promise.any([
+  important("Welcome guest!"),
+  sit("come here and sit"),
+  askForEat("what would you like to eat!"),
+])
+  .then((res) => {
+    console.log("Promise.any result:", res);
+  })
+  .catch((err) => console.log("Promise.any error:", err));
+
+// -> More modern approach of handling promises (async/await)
+
+// -> What is the output ?
+
+console.log("start");
+
+const promise1 = new Promise((resolve, reject) => {
+  console.log(1);
+  resolve(2);
+});
+
+promise1.then((res) => console.log(res)); // it will be printed after "end" because it represents an asynchronous block.
+
+console.log("end");
+
+// -> What is the output ?
+
+console.log("start again");
+
+const promise2 = new Promise((resolve, reject) => {
+  console.log(1);
+  resolve(2); // it will not print this resolve value because it is not yet consumed by then block below.
+  console.log(3);
+});
+
+promise2.then((res) => console.log(res));
+console.log("end again");
+
+// -> What is the output ?
+
+console.log("start 2");
+
+const fn = () =>
+  new Promise((resolve, reject) => {
+    console.log(1);
+    resolve("success");
+  });
+
+console.log("middle");
+
+fn().then((res) => console.log(res));
+
+console.log("end 2");
+
+// -> What would be the output ?
+
+function job() {
+  return new Promise((resolve, reject) => {
+    reject();
+  });
+}
+
+let promise5 = job();
+
+promise5
+  .then(() => console.log("success1"))
+  .then(() => console.log("success2"))
+  .catch(() => console.log("error"))
+  .then(() => console.log("success3")); // after catching rejected result it will also print the last then block because after rejecting the promise, the promise is not returning anything and when promise does not return anything it also can be consumed in the then block.
+
+let myPromise1 = new Promise((resolve, reject) => {
+  console.log("==============================test");
+  resolve();
+});
+myPromise1
+  .then(() => console.log(".............................test scsdkjfksd"))
+  .then(() => console.log("resolve again --------------------------"));
+
+// -> What is the output ?
+
+function job(state) {
+  return new Promise(function (resolve, reject) {
+    if (state) resolve("success Promise 6");
+    else reject("error Promise 6");
+  });
+}
+
+let promise6 = job(true);
+
+promise6
+  .then((data) => {
+    console.log(data);
+    return job(false);
+  })
+  .catch((error) => {
+    console.log(error);
+    return "Error caught"; // although we are passing a simple string here instead of function, it will also be treated as resolve value and will be consumed in the next then block.
+  })
+  .then((data) => {
+    console.log(data);
+    return job(true);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+
+// -> Re-write this example using async/await
+
+// function loadJson(url) {
+//   return fetch(url).then((response) => {
+//     if (response.status == 200) return response.json();
+//     else throw new Error(response.status);
+//   });
+// }
+// loadJson("https://fakeurl.com/no-such-user.json").catch((err) =>
+//   console.log(err)
+// );
+
+// re-write ->
+
+async function loadJsonAsync(url) {
+  try {
+    let response = await fetch(url);
+    if (response.status == 200) return response.json();
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+let resp = loadJsonAsync("https://fakeurl.com/no-such-user.json");
+console.log(resp);
+
+// -> Promise Polyfill
+
+// implement later

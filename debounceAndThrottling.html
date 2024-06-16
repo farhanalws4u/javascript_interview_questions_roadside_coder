@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button id="btn">Increment button</button>
+    <p>Button pressed <span id="increment-pressed">0</span> Times</p>
+    <p>Triggered <span id="increment-count">0</span> Times</p>
+
+    <script>
+      const btn = document.getElementById("btn");
+      const btnPressed = document.getElementById("increment-pressed");
+      const count = document.getElementById("increment-count");
+
+      var pressedCount = 0;
+      var triggerCount = 0;
+
+      // Debounce
+
+      const myDebounce = (callback, d) => {
+        let timer;
+        return function (...args) {
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(() => {
+            callback(...args);
+          }, d);
+        };
+      };
+
+      // throttle
+
+      const myThrottle = (callback, d) => {
+        let last = 0;
+
+        return (...args) => {
+          let now = new Date().getTime();
+          if (now - last < d) return;
+
+          last = now;
+          return callback(...args);
+        };
+      };
+
+      const throttleCont = myThrottle(() => {
+        count.innerHTML = ++triggerCount;
+      }, 800);
+
+      const debounceCount = myDebounce(() => {
+        count.innerHTML = ++triggerCount;
+      }, 800);
+
+      btn.addEventListener("click", () => {
+        // debounceCount();
+        throttleCont();
+        btnPressed.innerHTML = ++pressedCount;
+      });
+    </script>
+  </body>
+</html>
+
+<!-- Debouncing: Debouncing is a technique where you delay the execution of a function until after a certain amount of time has passed. -->
+
+<!-- Throttling is a technique in which, no matter how many times the user fires the event, the attached function will be executed only once in a given time interval. Throttling ensures that the function executes at regular intervals. -->
